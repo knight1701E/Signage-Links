@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"> 
+    <title>Rai News 24</title>
+    <link href="video-js.css" rel="stylesheet">
+</head>
+<body>
+    
+ 
+
+   <!-- HTML -->
+   <video id='hls-example'  class="video-js vjs-default-skin" width="1440" height="810" autoplay="false" controls autoplay>
+   <source type="application/x-mpegURL" src="https://eja.tv/?7c91442b6abdbfd18c0c7de626762153.m3u8">
+   </video>
+   <!-- JS code -->
+   <!-- If you'd like to support IE8 (for Video.js versions prior to v7) -->
+   <script src="https://vjs.zencdn.net/ie8/ie8-version/videojs-ie8.min.js"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/videojs-contrib-hls/5.14.1/videojs-contrib-hls.js"></script>
+   <script src="https://vjs.zencdn.net/7.2.3/video.js"></script>
+   <script>
+
+   videojs('hls-example').ready(function() {
+       this.play();
+   });
+   </script>
+
+ 
+</body>
+</html>
