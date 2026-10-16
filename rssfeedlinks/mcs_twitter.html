@@ -1,14 +1,75 @@
+<!DOCTYPE html>
+<html lang="en-GB">
 <head>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
-<link rel="stylesheet" href="style.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script src="https://www.youtube.com/player_api"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MCS Group news</title>
+<!-- Replaces the old FetchRSS/FeedWind widget (16 Oct 2026). Reads mcs-news.json, which a GitHub Action
+     refreshes hourly from MCS Group's own website feed (mcs-ltd.com/feed). No third-party widgets. -->
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #f4f3fa; font-family: "Segoe UI", Arial, Helvetica, sans-serif; color: #1d1647; }
+  #card { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: -webkit-box; display: -webkit-flex; display: flex; opacity: 0; -webkit-transition: opacity .8s; transition: opacity .8s; }
+  #card.show { opacity: 1; }
+  #pic { -webkit-flex: 0 0 46%; flex: 0 0 46%; background: #d9d6ec center / cover no-repeat; }
+  #txt { -webkit-flex: 1; flex: 1; padding: 4vh 3.2vw 9vh; box-sizing: border-box; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; -webkit-justify-content: center; justify-content: center; border-left: 0.8vw solid #9bc31c; }
+  #kicker { font-size: 3.4vh; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #9bc31c; margin-bottom: 1.6vh; }
+  #title { font-size: 6.4vh; line-height: 1.12; font-weight: 700; color: #2c2380; margin: 0 0 2vh; }
+  #date { font-size: 3.4vh; color: #5d5790; margin-bottom: 1.6vh; }
+  #summary { font-size: 3.9vh; line-height: 1.35; color: #2b2650; }
+  #foot { position: absolute; left: 46%; right: 0; bottom: 0; height: 7vh; padding: 0 3.2vw; box-sizing: border-box; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; font-size: 3vh; color: #5d5790; border-left: 0.8vw solid #9bc31c; }
+  #dots span { display: inline-block; width: 1.4vh; height: 1.4vh; border-radius: 50%; background: #c9c5e4; margin-right: .8vh; }
+  #dots span.on { background: #2c2380; }
+  #empty { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: none; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center; font-size: 6vh; font-weight: 700; color: #2c2380; }
+</style>
 </head>
- 
- 
-<!-- start feedwind code --> <script type="text/javascript" src="https://feed.mikle.com/js/fw-loader.js" data-fw-param="117495/"></script> <!-- end feedwind code -->
- 
 <body>
-   
- 
+<div id="card"><div id="pic"></div><div id="txt"><div id="kicker">MCS Group news</div><h1 id="title"></h1><div id="date"></div><div id="summary"></div></div></div>
+<div id="foot"><div id="dots"></div></div>
+<div id="empty">MCS Group</div>
+<script>
+(function () {
+  var SLIDE_MS = 15000, RELOAD_MS = 30 * 60 * 1000, KEY = "mcsNewsCache";
+  var items = [], i = 0, timer = null;
+  function $(id) { return document.getElementById(id); }
+  function save(d) { try { localStorage.setItem(KEY, JSON.stringify(d)); } catch (e) {} }
+  function cached() { try { return JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) { return null; } }
+  function show() {
+    if (!items.length) { $("empty").style.display = "flex"; return; }
+    $("empty").style.display = "none";
+    var it = items[i % items.length], card = $("card");
+    card.className = "";
+    setTimeout(function () {
+      $("pic").style.backgroundImage = it.image ? "url('" + it.image.replace(/'/g, "%27") + "')" : "none";
+      $("title").textContent = it.title;
+      $("date").textContent = it.date || "";
+      $("summary").textContent = it.summary || "";
+      var dots = "";
+      for (var k = 0; k < items.length; k++) dots += '<span class="' + (k === i % items.length ? "on" : "") + '"></span>';
+      $("dots").innerHTML = dots;
+      card.className = "show";
+      i++;
+    }, 800);
+  }
+  function start(d) {
+    if (d && d.items && d.items.length) { items = d.items.slice(0, 8); }
+    if (timer) clearInterval(timer);
+    show(); timer = setInterval(show, SLIDE_MS);
+  }
+  function load() {
+    var x = new XMLHttpRequest();
+    x.open("GET", "mcs-news.json?t=" + new Date().getTime(), true);
+    x.onreadystatechange = function () {
+      if (x.readyState !== 4) return;
+      var d = null;
+      if (x.status === 200) { try { d = JSON.parse(x.responseText); } catch (e) {} }
+      if (d && d.items && d.items.length) { save(d); start(d); }
+      else if (!items.length) { start(cached()); }
+    };
+    x.send();
+  }
+  load();
+  setInterval(load, RELOAD_MS);
+})();
+</script>
 </body>
+</html>
