@@ -57,7 +57,7 @@
   }
   function load() {
     var x = new XMLHttpRequest();
-    x.open("GET", "mcs-news.json?t=" + new Date().getTime(), true);
+    x.open("GET", "/Signage-Links/rssfeedlinks/mcs-news.json?t=" + new Date().getTime(), true);
     x.onreadystatechange = function () {
       if (x.readyState !== 4) return;
       var d = null;
