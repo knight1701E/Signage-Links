@@ -20,6 +20,14 @@
   #dots span { display: inline-block; width: 1.4vh; height: 1.4vh; border-radius: 50%; background: #c9c5e4; margin-right: .8vh; }
   #dots span.on { background: #2c2380; }
   #empty { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: none; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center; font-size: 6vh; font-weight: 700; color: #2c2380; }
+  #txt { overflow: hidden; }
+  @media (orientation: portrait) {
+    #card { -webkit-flex-direction: column; flex-direction: column; }
+    #pic { -webkit-flex: 0 0 42%; flex: 0 0 42%; }
+    #txt, #foot { border-left: 0; border-top: 0.8vh solid #9bc31c; }
+    #foot { left: 0; border-top: 0; }
+    #title { font-size: 4.6vh; } #summary { font-size: 2.8vh; } #kicker, #date { font-size: 2.4vh; }
+  }
 </style>
 </head>
 <body>
